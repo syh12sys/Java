@@ -32,4 +32,11 @@ public class UserController {
         RestRetValue tmp = new RestRetValue("0", "", isSuc);
         return JSON.toJSONString(tmp);
     }
+
+    @RequestMapping(value = "/modify_password", method = RequestMethod.GET)
+    String modifyPassord(@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password, @RequestParam(value = "newPassword") String newPassword) {
+            Boolean isSuc = userSerivce.modifyPassword(userName, password, newPassword);
+            RestRetValue tmp = new RestRetValue("0", "", isSuc);
+        return JSON.toJSONString(tmp);
+    }
 }

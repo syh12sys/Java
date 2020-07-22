@@ -51,8 +51,28 @@ public class UserService {
         return user != null;
     }
 
+    public Boolean modifyPassword(String userName, String password, String newPassword) {
+        if (userName == null || userName.isEmpty() ||
+                password == null || password.isEmpty() ||
+                newPassword == null || newPassword.isEmpty()) {
+            return false;
+        }
+        if (!isValidUserName(userName)) {
+            return false;
+        }
+
+        if (!login(userName, password)) {
+            return false;
+        }
+
+        userMapper.modifyPassword(userName, newPassword);
+        return true;
+    }
+
     public Boolean isUserExist(String userName){
         return userMapper.selectByUserName(userName) != null;
     }
+
+
 
 }
