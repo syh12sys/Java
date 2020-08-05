@@ -52,4 +52,11 @@ public class UserController {
         RestRetValue response = new RestRetValue("0", "", users);
         return JSON.toJSONString(response);
     }
+
+    @RequestMapping(value = "/testOptimisticLock", method = RequestMethod.GET)
+    String testOptimisticLock() {
+        boolean ret = userSerivce.testOptimisticLock();
+        RestRetValue response = new RestRetValue("0", "", ret);
+        return JSON.toJSONString(response);
+    }
 }

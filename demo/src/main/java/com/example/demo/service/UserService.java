@@ -44,6 +44,9 @@ public class UserService implements ApplicationEventPublisherAware {
     // 事件发布者
     ApplicationEventPublisher applicationEventPublisher;
 
+    @Autowired
+    OptimisticLockService optimisticLockService;
+
     private Boolean isValidUserName(String userName) {
         if (userName.length() > 40 || userName.length() < 6) {
             return false;
@@ -175,6 +178,11 @@ public class UserService implements ApplicationEventPublisherAware {
         long passTime = System.currentTimeMillis() - loginDatetime.getTime();
         // 时间大于10天，认为token过期，续重新登录
         return passTime <= 10 * 24 * 60 * 60 * 1000;
+    }
+
+    public boolean testOptimisticLock() {
+        optimisticLockService.increaseOptimisticLockCount();
+        return true;
     }
 
     // 生成用户唯一标识：用户名 + user-agent + postman-token
