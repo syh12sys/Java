@@ -46,5 +46,4 @@ public class RestRetValue<T> {
         this.errorMsg = errorMsg;
         this.data = data;
     }
-
 }

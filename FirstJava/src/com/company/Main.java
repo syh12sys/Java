@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 public class Main {
 
     public static void main(String[] args) {
+        System.setProperty("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
+
         System.out.println("FirstJava Application");
 
         Person zhangsan = new Student("张三");

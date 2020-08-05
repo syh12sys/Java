@@ -13,6 +13,8 @@ import org.aspectj.lang.annotation.Aspect;
 
 @Aspect
 @Component
+// 切面是一个编程层面的分离系统代码和业务代码的手段
+// 利用切面捕获service所有的异常并打印，之后异常要继续向外抛，否则会影响异常的正常处理流程，例如事物功能
 public class LogAspect {
 
     protected final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
@@ -23,20 +25,16 @@ public class LogAspect {
     @Pointcut("execution(* com.example.demo.service.*.*(..))")
     public void controllerMethod()
     {
-
     }
 
     @Around("controllerMethod()")
-    public Object aroundControllerAdvice(ProceedingJoinPoint joinPoint)
-    {
-        try
-        {
+    public Object aroundControllerAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
+        try {
             return joinPoint.proceed();
-        } catch (Throwable throwable)
-        {
+        } catch (Throwable throwable) {
             throwable.printStackTrace();
-        }finally
-        {
+            throw throwable;
+        } finally {
             try {
                 Signature signature = joinPoint.getSignature();
                 if (signature != null) {
@@ -48,7 +46,6 @@ public class LogAspect {
                 log.error("aroundControllerAdvice", e);
             }
         }
-        return null;
     }
 
     @AfterThrowing(value = "controllerMethod()", throwing = "exception")
@@ -89,5 +86,4 @@ public class LogAspect {
         }
         return o.toString();
     }
-
 }
