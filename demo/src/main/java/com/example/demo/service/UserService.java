@@ -41,7 +41,7 @@ public class UserService implements ApplicationEventPublisherAware {
     @Autowired
     UserDetailMapper userDetailMapper;
 
-    // 事件发布者
+    // 事件发布者，目的是解耦
     ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
