@@ -1,19 +1,16 @@
 package com.example.demo.entity;
 
-
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import jdk.nashorn.internal.objects.annotations.Setter;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
-
-
-// user_info 和0 user_info_detail 垂直分表，一个数据页能存储更多的数据，减少磁盘i/o的次数，提供性能
+// user_info 和 user_info_detail 垂直分表，一个数据页能存储更多的数据，减少磁盘i/o的次数，提供性能
 // 垂直分表一般安装使用频次分表
 @TableName(value = "user_info")//指定表名
-public class UserEntity {
+public class UserEntity implements Cloneable {
     @TableId(value = "id",type = IdType.AUTO)//指定自增策略
     private int id;
 
@@ -96,6 +93,7 @@ public class UserEntity {
         return phoneNumber;
     }
 
+    @Cipher(value = "encrypt")
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -106,5 +104,16 @@ public class UserEntity {
 
     public void setTestOptimisticLockCount(int testOptimisticLockCount) {
         this.testOptimisticLockCount = testOptimisticLockCount;
+    }
+
+    @Override
+    public Object clone() {
+        UserEntity stu = null;
+        try {
+            stu = (UserEntity)super.clone();
+        } catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return stu;
     }
 }

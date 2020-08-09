@@ -3,6 +3,7 @@ package com.example.demo.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.entity.Cipher;
 import com.example.demo.entity.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.mybatis.spring.annotation.MapperScan;
@@ -21,12 +22,14 @@ public interface UserMapper extends BaseMapper<UserEntity> {
     @Select("select * from user_info where token=#{userToken} limit 1")
     UserEntity selectByToken(@Param("userToken") String userToken);
 
+    @Cipher(value = "decrypt")
     @Select("select * from user_info where username=#{username} and password=#{password} limit 1")
     UserEntity login(@Param("username") String username, @Param("password") String password);
 
     @Update("update user_info set token=#{userToken}, login_datetime=now() where id=#{id}")
     int updateUserToken(@Param("id") Integer id, @Param("userToken") String userToken);
 
+    @Cipher(value = "encrypt")
     @Insert("insert into user_info(username,password,status) values(#{userEntity.username},#{userEntity.password},1)")
     @SelectKey(statement = "select id from user_info where username=#{userEntity.username}", keyProperty = "userEntity.id", before = false, resultType = int.class)
     int register(@Param("userEntity") UserEntity userEntity);

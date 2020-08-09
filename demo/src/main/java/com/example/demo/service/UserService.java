@@ -2,8 +2,10 @@ package com.example.demo.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.demo.config.DynamicDataSourceContextHolder;
 import com.example.demo.controller.RestRetValue;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.entity.Cipher;
 import com.example.demo.entity.UserDetailEntity;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.mapper.UserDetailMapper;
@@ -20,18 +22,21 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Max;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-// java练习记录
+// java练习记录：springMVC（serverlet）和mybatis（DataSource），注解是关键
 // 1. springMVC三层框架：修改密码
-// 2. 拦截器：鉴权
-// 3. 分页查询
-// 4. 事物：可靠
-// 5. 异步事件机制：解耦、异步
-// 6. 悲观锁、乐观锁：性能差当稳定、性能好不稳定
+// 2. 拦截器：筛选不想要的， 鉴权
+// 3. 过滤器：过滤request，筛选想要的
+// 4. 分页查询：mybatis提供功能
+// 5. 事物：可靠，多个service函数调用，单个mapper函数已经在事务里面；垂直分表
+// 6. 异步事件机制：解耦、异步
+// 7. 悲观锁、乐观锁：性能差当稳定、性能好不稳定？ 互联网的业务都要考虑锁的问题？
+// 8. 读写分离：如何动态的扩展数据服务器？切面不能切entity这种自定义类？ 右键菜单新建的切面类 *ja是什么东西？
 @Service
 public class UserService implements ApplicationEventPublisherAware {
 
@@ -88,32 +93,40 @@ public class UserService implements ApplicationEventPublisherAware {
     }
 
     // 登录
+    @DS(value = "slave")
     public String login(String userName, String password) {
         if (userName == null || userName.isEmpty() || password == null || password.isEmpty()) {
             return null;
         }
 
         String userToken = null;
-        try {
-            Map<String, Object> columnMap = new HashMap<String, Object>();
-            columnMap.put("username", userName);
-            columnMap.put("password", password);
-            UserEntity user = userMapper.login(userName, password);
-            //List userList = userMapper.selectByMap(columnMap);
-            if (user == null) {
-                return null;
-            }
-
-            // 登录成功更新token
-            userToken = generateUserToken(userName);
-            if (userToken == null) {
-                return null;
-            }
-            userMapper.updateUserToken(user.getId(), userToken);
-        } catch (Exception e) {
-            e.printStackTrace();
+        Map<String, Object> columnMap = new HashMap<String, Object>();
+        columnMap.put("username", userName);
+        columnMap.put("password", password);
+        UserEntity user = userMapper.login(userName, password);
+        //List userList = userMapper.selectByMap(columnMap);
+        if (user == null) {
             return null;
         }
+
+        try {
+            Class<?> userClass = user.getClass();
+            Method method = user.getClass().getMethod("setPhoneNumber", String.class);
+            Object[] methods = user.getClass().getMethods();
+            boolean ret =  method.isAnnotationPresent(Cipher.class);
+        } catch (Throwable throwable) {
+
+        }
+
+
+
+        // 登录成功更新token
+        userToken = generateUserToken(userName);
+        if (userToken == null) {
+            return null;
+        }
+        userMapper.updateUserToken(user.getId(), userToken);
+
         return userToken;
     }
 
