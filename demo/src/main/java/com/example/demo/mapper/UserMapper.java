@@ -39,4 +39,7 @@ public interface UserMapper extends BaseMapper<UserEntity> {
 
     @Update("update user_info set test_optimistic_lock_count = test_optimistic_lock_count + 1, update_at=now() where id = #{userEntity.id} and update_at = #{userEntity.updateAt}")
     int updateTestOptimisticLockCount(@Param("userEntity") UserEntity userEntity);
+
+    @Insert("insert into user values (#{userId}, #{name}, #{age}, #{address})")
+    int testSubDatabase(@Param("userId") Integer userId, @Param("name") String name, @Param("age") Integer age, @Param("address") String address);
 }

@@ -59,4 +59,11 @@ public class UserController {
         RestRetValue response = new RestRetValue("0", "", ret);
         return JSON.toJSONString(response);
     }
+
+    @RequestMapping(value = "/testSubDatabase", method = RequestMethod.GET)
+    String testSubDatabase() {
+        userSerivce.testSubDatabase();
+        RestRetValue response = new RestRetValue("0", "", true);
+        return JSON.toJSONString(response);
+    }
 }

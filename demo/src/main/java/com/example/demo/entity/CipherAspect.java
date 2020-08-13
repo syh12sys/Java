@@ -20,7 +20,7 @@ public class CipherAspect {
     public Object aroundCiperPointCut(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             Object retObject = joinPoint.proceed();
-
+            Cipher cipher = getDsAnnotation(joinPoint);
             if (cipher == null || !cipher.value().equals("decrypt")) {
                 return retObject;
             }

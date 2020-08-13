@@ -118,8 +118,6 @@ public class UserService implements ApplicationEventPublisherAware {
 
         }
 
-
-
         // 登录成功更新token
         userToken = generateUserToken(userName);
         if (userToken == null) {
@@ -193,9 +191,16 @@ public class UserService implements ApplicationEventPublisherAware {
         return passTime <= 10 * 24 * 60 * 60 * 1000;
     }
 
+    // 乐观锁
     public boolean testOptimisticLock() {
         optimisticLockService.increaseOptimisticLockCount();
         return true;
+    }
+
+    // 分库
+    public void testSubDatabase()
+    {
+        userMapper.testSubDatabase(1, "test1", 15, "上海市");
     }
 
     // 生成用户唯一标识：用户名 + user-agent + postman-token
