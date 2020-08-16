@@ -29,7 +29,7 @@ import java.util.Map;
 //        return DataSourceBuilder.create().build();
 //    }
 //
-//    //@Bean
+//    @Bean
 //    @Primary
 //    public DataSource dynamicDataSource() {
 //        Map<Object, Object> dataSources = new HashMap<>(2);
