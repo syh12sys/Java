@@ -66,4 +66,9 @@ public class UserController {
         RestRetValue response = new RestRetValue("0", "", true);
         return JSON.toJSONString(response);
     }
+
+    @RequestMapping(value = "/testErrorControl", method = RequestMethod.GET)
+    String testErrorControl() {
+        throw new NullPointerException("TestController have exception");
+    }
 }
