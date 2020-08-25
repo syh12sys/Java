@@ -1,5 +1,7 @@
 package com.example.demo.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class UserDTO {
     private Integer id;
 
@@ -21,6 +23,9 @@ public class UserDTO {
 
     // 地址
     private String address;
+
+    // 头像
+    private MultipartFile avatar;
 
     public Integer getId() {
         return id;
@@ -84,5 +89,13 @@ public class UserDTO {
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public MultipartFile getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(MultipartFile avatar) {
+        this.avatar = avatar;
     }
 }

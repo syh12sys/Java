@@ -22,6 +22,9 @@ public class UserDetailEntity {
     // 地址
     private String address;
 
+    // 头像
+    private String avatar;
+
     // 用户ID
     private int userId;
 
@@ -71,5 +74,13 @@ public class UserDetailEntity {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

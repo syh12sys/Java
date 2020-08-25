@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.demo.config.DynamicDataSourceContextHolder;
 import com.example.demo.controller.RestRetValue;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.Cipher;
@@ -11,17 +10,17 @@ import com.example.demo.entity.UserEntity;
 import com.example.demo.mapper.UserDetailMapper;
 import com.example.demo.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Max;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -37,6 +36,11 @@ import java.util.*;
 // 6. 异步事件机制：解耦、异步
 // 7. 悲观锁、乐观锁：性能差当稳定、性能好不稳定？ 互联网的业务都要考虑锁的问题？
 // 8. 读写分离：如何动态的扩展数据服务器？切面不能切entity这种自定义类？ 右键菜单新建的切面类 *ja是什么东西？
+// 9. 分库分表：sharing-jdbc，支持读写分离，把读写分析和分库分表做到了极致简单
+// 10. 日志: slf4j统一接口层
+// 11. 错误处理: control统一错误处理
+// 12. 文件：需要存储到文件系统？
+// 13. 定时任务
 @Service
 public class UserService implements ApplicationEventPublisherAware {
 
@@ -61,7 +65,7 @@ public class UserService implements ApplicationEventPublisherAware {
 
     // 注册
     @Transactional
-    public RestRetValue<Boolean> register(UserDTO userDTO) {
+    public RestRetValue<Boolean> register(UserDTO userDTO) throws IOException {
         RestRetValue<Boolean> registerRet = new RestRetValue<Boolean>();
         if (!isValidUserName(userDTO.getUserName())) {
             registerRet.setReturnValue("10001", "用户名不合法", false);
@@ -82,6 +86,14 @@ public class UserService implements ApplicationEventPublisherAware {
             userDetailEntity.setInterest(userDTO.getInterest());
             userDetailEntity.setUserId(userEntity.getId());
             userDetailEntity.setSex(userDTO.getSex());
+            // 头像存盘
+            if (userDTO.getAvatar() != null) {
+                String folder = "G:/test";
+                File localFile = new File(folder,new Date().getTime() + ".png");
+                userDTO.getAvatar().transferTo(localFile); //将上传的文件写入到本地的文件中
+                userDetailEntity.setAvatar(localFile.getAbsolutePath());
+            }
+
             userDetailMapper.insert(userDetailEntity);
 
             // 注册成功发送短信通知用户
@@ -93,11 +105,13 @@ public class UserService implements ApplicationEventPublisherAware {
     }
 
     // 登录
-    @DS(value = "slave")
+    @DS(value = "master")
     public String login(String userName, String password) {
         if (userName == null || userName.isEmpty() || password == null || password.isEmpty()) {
             return null;
         }
+
+        // 检测缓存
 
         String userToken = null;
         Map<String, Object> columnMap = new HashMap<String, Object>();
@@ -109,21 +123,25 @@ public class UserService implements ApplicationEventPublisherAware {
             return null;
         }
 
-        try {
-            Class<?> userClass = user.getClass();
-            Method method = user.getClass().getMethod("setPhoneNumber", String.class);
-            Object[] methods = user.getClass().getMethods();
-            boolean ret =  method.isAnnotationPresent(Cipher.class);
-        } catch (Throwable throwable) {
-
-        }
+//        try {
+//            Class<?> userClass = user.getClass();
+//            Method method = user.getClass().getMethod("setPhoneNumber", String.class);
+//            Object[] methods = user.getClass().getMethods();
+//            boolean ret =  method.isAnnotationPresent(Cipher.class);
+//        } catch (Throwable throwable) {
+//
+//        }
 
         // 登录成功更新token
-        userToken = generateUserToken(userName);
+        userToken = generateUserToken(user.getId());
         if (userToken == null) {
             return null;
         }
         userMapper.updateUserToken(user.getId(), userToken);
+
+        // token 放入redis
+        Jedis jedis = new Jedis("localhost");
+        jedis.setex(userToken, 3 * 24 * 3600, "");
 
         return userToken;
     }
@@ -177,18 +195,13 @@ public class UserService implements ApplicationEventPublisherAware {
             return false;
         }
 
-        // token是否过期
-        UserEntity userEntity = userMapper.selectByToken(userToken);
-        if (userEntity == null) {
+        // 查询redis是否存在，如果存在则跟新缓存时间
+        Jedis jedis = new Jedis("localhost");
+        if (!jedis.exists(userToken)) {
             return false;
         }
-        Date loginDatetime = userEntity.getLoginDatetime();
-        if (loginDatetime == null) {
-            return false;
-        }
-        long passTime = System.currentTimeMillis() - loginDatetime.getTime();
-        // 时间大于10天，认为token过期，续重新登录
-        return passTime <= 10 * 24 * 60 * 60 * 1000;
+        jedis.setex(userToken, 3 * 24 * 3600, "");
+        return true;
     }
 
     // 乐观锁
@@ -203,24 +216,23 @@ public class UserService implements ApplicationEventPublisherAware {
         userMapper.testSubDatabase(1, "test1", 15, "上海市");
     }
 
-    // 生成用户唯一标识：用户名 + user-agent + postman-token
-    private String generateUserToken(String userName) {
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
+
+    // 生成用户唯一标识：userid + user-agent
+    private String generateUserToken(int userId) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         String userAgent = request.getHeader("user-agent");
-        String userPostmanToken = request.getHeader("postman-token");
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update((userName + userAgent + userPostmanToken).getBytes());
+            md.update((userId + userAgent).getBytes());
             return new BigInteger(1, md.digest()).toString(16);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }
-    }
-
-    @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class UserController {
     UserService userSerivce;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    String register(@RequestBody UserDTO userDTO){
+    String register(UserDTO userDTO) throws IOException {
         return JSON.toJSONString(userSerivce.register(userDTO));
     }
 
