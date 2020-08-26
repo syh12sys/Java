@@ -18,6 +18,34 @@ USE `usercenter`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `address_phone`
+--
+
+DROP TABLE IF EXISTS `address_phone`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `address_phone` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `phone` varchar(45) NOT NULL,
+  `province` varchar(45) DEFAULT NULL,
+  `city` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `phone_UNIQUE` (`phone`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `address_phone`
+--
+
+LOCK TABLES `address_phone` WRITE;
+/*!40000 ALTER TABLE `address_phone` DISABLE KEYS */;
+INSERT INTO `address_phone` VALUES (1,'13564518816','河南省','南阳市');
+/*!40000 ALTER TABLE `address_phone` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `order_info`
 --
 
@@ -32,7 +60,7 @@ CREATE TABLE `order_info` (
   `user_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +69,7 @@ CREATE TABLE `order_info` (
 
 LOCK TABLES `order_info` WRITE;
 /*!40000 ALTER TABLE `order_info` DISABLE KEYS */;
-INSERT INTO `order_info` VALUES (1,'2020-07-28 23:19:15','123456','2012007280001',1);
+INSERT INTO `order_info` VALUES (1,'2020-07-28 23:19:15','123456','2012007280001',13);
 /*!40000 ALTER TABLE `order_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,7 +95,7 @@ CREATE TABLE `user_info` (
   UNIQUE KEY `username_UNIQUE` (`username`),
   KEY `create_at` (`create_at`),
   KEY `update_at` (`update_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,7 +104,7 @@ CREATE TABLE `user_info` (
 
 LOCK TABLES `user_info` WRITE;
 /*!40000 ALTER TABLE `user_info` DISABLE KEYS */;
-INSERT INTO `user_info` VALUES (1,'孙迎世','123456',1,'2020-08-06 01:11:56','2020-07-20 11:57:40','a3d3b2b67f5114ca1761c4ff71fe3fdc','2020-07-30 00:36:55',NULL,101),(2,'梁海燕Nancy','123456',1,'2020-08-01 23:31:40','2020-08-01 23:31:40',NULL,NULL,NULL,0),(10,'孙佳阳123456','123456',1,'2020-08-04 23:54:53','2020-08-04 23:54:53',NULL,NULL,NULL,0);
+INSERT INTO `user_info` VALUES (13,'孙佳阳123456','123456',1,'2020-08-22 11:00:18','2020-08-22 11:00:18','96dfa00dc566dc77af79a594dc86ddb','2020-08-25 23:52:41',NULL,0);
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,10 +122,11 @@ CREATE TABLE `user_info_detail` (
   `age` int DEFAULT NULL,
   `address` varchar(256) DEFAULT NULL,
   `user_id` int NOT NULL,
+  `avatar` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `user_id_UNIQUE` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,7 +135,7 @@ CREATE TABLE `user_info_detail` (
 
 LOCK TABLES `user_info_detail` WRITE;
 /*!40000 ALTER TABLE `user_info_detail` DISABLE KEYS */;
-INSERT INTO `user_info_detail` VALUES (1,NULL,NULL,31,'上海市浦东新区川环南路806弄10号102',1),(5,'吃、玩','男',4,'上海市浦东新区川环南路806弄10号102',10);
+INSERT INTO `user_info_detail` VALUES (7,'吃、玩','男',4,'上海市浦东新区川环南路806弄10号102',13,'G:\\test\\1598065223991.png');
 /*!40000 ALTER TABLE `user_info_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -119,4 +148,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-06  1:14:46
+-- Dump completed on 2020-08-27  0:15:09

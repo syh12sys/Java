@@ -7,6 +7,7 @@ import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.Cipher;
 import com.example.demo.entity.UserDetailEntity;
 import com.example.demo.entity.UserEntity;
+import com.example.demo.mapper.PhoneAddressMapper;
 import com.example.demo.mapper.UserDetailMapper;
 import com.example.demo.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,33 +29,42 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 // java练习记录：springMVC（serverlet）和mybatis（DataSource），注解是关键
+// ***************************springMVC*******************************************
 // 1. springMVC三层框架：修改密码
 // 2. 拦截器：筛选不想要的， 鉴权
 // 3. 过滤器：过滤request，筛选想要的
+//*********************数据库 **************************************************
 // 4. 分页查询：mybatis提供功能
 // 5. 事物：可靠，多个service函数调用，单个mapper函数已经在事务里面；垂直分表
 // 6. 异步事件机制：解耦、异步
 // 7. 悲观锁、乐观锁：性能差当稳定、性能好不稳定？ 互联网的业务都要考虑锁的问题？
 // 8. 读写分离：如何动态的扩展数据服务器？切面不能切entity这种自定义类？ 右键菜单新建的切面类 *ja是什么东西？
 // 9. 分库分表：sharing-jdbc，支持读写分离，把读写分析和分库分表做到了极致简单
+//***********************杂项*****************************************************
 // 10. 日志: slf4j统一接口层
 // 11. 错误处理: control统一错误处理
 // 12. 文件：需要存储到文件系统？
 // 13. 定时任务
+//***********************分布式服务-redis*****************************************************
+// 1. redis入门：登录成功记录token到redis，鉴权访问redis
+// 2. redis实践：手机号对应省和市，典型的读多写少的场景，启动时载入redis
 @Service
 public class UserService implements ApplicationEventPublisherAware {
 
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
 
     @Autowired
-    UserDetailMapper userDetailMapper;
+    private UserDetailMapper userDetailMapper;
 
     // 事件发布者，目的是解耦
-    ApplicationEventPublisher applicationEventPublisher;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    OptimisticLockService optimisticLockService;
+    private OptimisticLockService optimisticLockService;
+
+    @Autowired
+    private PhoneAddressMapper phoneAddressMapper;
 
     private Boolean isValidUserName(String userName) {
         if (userName.length() > 40 || userName.length() < 6) {
