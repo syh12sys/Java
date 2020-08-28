@@ -2,7 +2,10 @@ package com.example.demo.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.entity.PhoneAddressEntity;
+import com.example.demo.service.PhoneAddressService;
 import com.example.demo.service.UserService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,9 @@ public class UserController {
 
     @Autowired
     UserService userSerivce;
+
+    @Autowired
+    PhoneAddressService phoneAddressService;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     String register(UserDTO userDTO) throws IOException {
@@ -71,5 +77,12 @@ public class UserController {
     @RequestMapping(value = "/testErrorControl", method = RequestMethod.GET)
     String testErrorControl() {
         throw new NullPointerException("TestController have exception");
+    }
+
+    @RequestMapping(value = "/getPhoneAddress", method = RequestMethod.GET)
+    String getPhoneAddress(@RequestParam(value = "phone") String phone) {
+         PhoneAddressEntity phoneAddressEntity = phoneAddressService.getPhoneAddress(phone);
+         RestRetValue response = new RestRetValue("0", "", phoneAddressEntity == null ? "" : phoneAddressEntity);
+         return  JSON.toJSONString(response);
     }
 }

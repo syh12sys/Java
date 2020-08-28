@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.controller.RestRetValue;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.Cipher;
+import com.example.demo.entity.PhoneAddressEntity;
 import com.example.demo.entity.UserDetailEntity;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.mapper.PhoneAddressMapper;
@@ -62,9 +63,6 @@ public class UserService implements ApplicationEventPublisherAware {
 
     @Autowired
     private OptimisticLockService optimisticLockService;
-
-    @Autowired
-    private PhoneAddressMapper phoneAddressMapper;
 
     private Boolean isValidUserName(String userName) {
         if (userName.length() > 40 || userName.length() < 6) {
