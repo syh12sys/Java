@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-@Mapper
+//@Mapper
 public interface PhoneAddressMapper extends BaseMapper<PhoneAddressEntity> {
-    @Select("select * from address_phone")
-    public List<PhoneAddressEntity> selectAll();
+//    @Select("select * from address_phone")
+//    public List<PhoneAddressEntity> selectAll();
 }

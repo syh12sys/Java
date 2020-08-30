@@ -12,15 +12,15 @@ import java.util.List;
 
 @Component
 public class PhoneAdressLoader {
-    @Autowired
-    private PhoneAddressService phoneAddressService;
-
-    public void loadData() {
-        Jedis client = new Jedis("localhost");
-        List<PhoneAddressEntity> phoneAddressList = phoneAddressService.getAllPhoneAddress();
-        for (PhoneAddressEntity phoneAddressEntity : phoneAddressList) {
-            client.hset(phoneAddressEntity.getPhone(), "province", phoneAddressEntity.getProvince());
-            client.hset(phoneAddressEntity.getPhone(), "city", phoneAddressEntity.getCity());
-        }
-    }
+//    @Autowired
+//    private PhoneAddressService phoneAddressService;
+//
+//    public void loadData() {
+//        Jedis client = new Jedis("localhost");
+//        List<PhoneAddressEntity> phoneAddressList = phoneAddressService.getAllPhoneAddress();
+//        for (PhoneAddressEntity phoneAddressEntity : phoneAddressList) {
+//            client.hset(phoneAddressEntity.getPhone(), "province", phoneAddressEntity.getProvince());
+//            client.hset(phoneAddressEntity.getPhone(), "city", phoneAddressEntity.getCity());
+//        }
+//    }
 }

@@ -14,6 +14,6 @@ public class AppInit implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments arguments) throws Exception {
-        phoneAdressLoader.loadData();
+        //phoneAdressLoader.loadData();
     }
 }
