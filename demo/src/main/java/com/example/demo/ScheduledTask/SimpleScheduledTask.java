@@ -15,6 +15,6 @@ public class SimpleScheduledTask {
 
     @Scheduled(fixedRate = 5000)
     private void run() {
-        System.out.println("任务执行时间：" + LocalDateTime.now());
+        System.out.println("定时任务执行时间：" + LocalDateTime.now());
     }
 }

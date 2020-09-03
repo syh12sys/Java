@@ -47,8 +47,10 @@ import java.util.*;
 // 12. 文件：需要存储到文件系统？
 // 13. 定时任务
 //***********************分布式服务-redis*****************************************************
-// 1. redis入门：登录成功记录token到redis，鉴权访问redis
-// 2. redis实践：手机号对应省和市，典型的读多写少的场景，启动时载入redis
+// 1. redis入门：登录成功记录token到redis，鉴权访问redis，redis可以设置超时时间
+// 2. redis实践：手机号对应省和市，典型的读多写少的场景，启动时载入redis，redis常用数据类型是hash和string
+// 3. redis-分布式锁：
+// 4. redis-事物，多个操作序列，保证中间不会插入其它操作
 @Service
 public class UserService implements ApplicationEventPublisherAware {
 

@@ -26,8 +26,8 @@ public class UserController {
     @Autowired
     UserService userSerivce;
 
-/*    @Autowired
-    PhoneAddressService phoneAddressService;*/
+    @Autowired
+    PhoneAddressService phoneAddressService;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     String register(UserDTO userDTO) throws IOException {
@@ -79,10 +79,10 @@ public class UserController {
         throw new NullPointerException("TestController have exception");
     }
 
-//    @RequestMapping(value = "/getPhoneAddress", method = RequestMethod.GET)
-//    String getPhoneAddress(@RequestParam(value = "phone") String phone) {
-//         PhoneAddressEntity phoneAddressEntity = phoneAddressService.getPhoneAddress(phone);
-//         RestRetValue response = new RestRetValue("0", "", phoneAddressEntity == null ? "" : phoneAddressEntity);
-//         return  JSON.toJSONString(response);
-//    }
+    @RequestMapping(value = "/getPhoneAddress", method = RequestMethod.GET)
+    String getPhoneAddress(@RequestParam(value = "phone") String phone) {
+         PhoneAddressEntity phoneAddressEntity = phoneAddressService.getPhoneAddress(phone);
+         RestRetValue response = new RestRetValue("0", "", phoneAddressEntity == null ? "" : phoneAddressEntity);
+         return  JSON.toJSONString(response);
+    }
 }
