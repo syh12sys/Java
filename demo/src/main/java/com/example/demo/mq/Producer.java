@@ -2,6 +2,8 @@ package com.example.demo.mq;
 
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.common.message.Message;
 import org.slf4j.LoggerFactory;
 
 public class Producer {
@@ -17,6 +19,10 @@ public class Producer {
         producer.setVipChannelEnabled(false);
         //绑定name server
         producer.setNamesrvAddr(JmsConfig.SERVER_NAME);
+        // 发送超时默认是3000
+        producer.setSendMsgTimeout(6000);
+        // 出错重试的次数，默认是2
+        producer.setRetryTimesWhenSendFailed(3);
     }
 
     /**
@@ -29,6 +35,10 @@ public class Producer {
         } catch (MQClientException e) {
             e.printStackTrace();
         }
+    }
+
+   public SendResult send(Message message) throws Exception  {
+        return producer.send(message);
     }
 
     public DefaultMQProducer getProducer(){

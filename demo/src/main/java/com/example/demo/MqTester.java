@@ -27,12 +27,12 @@ public class MqTester implements ApplicationRunner {
 
         List<String> msgs = new ArrayList<>();
         msgs.add("孙迎世");
-        msgs.add("梁海燕");
-        msgs.add("孙佳阳");
-        msgs.add("13141516");
+//        msgs.add("梁海燕");
+//        msgs.add("孙佳阳");
+//        msgs.add("13141516");
         for (String s : msgs) {
             Message message = new Message(JmsConfig.TOPIC, "testtag", s.getBytes("utf-8"));
-            SendResult sendResult = producer.getProducer().send(message);
+            SendResult sendResult = producer.send(message);
             log.info("生产者：生产消息 {} , result={}", s, sendResult.getSendStatus());
         }
     }
